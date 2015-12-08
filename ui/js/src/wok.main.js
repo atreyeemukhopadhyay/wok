@@ -17,7 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 wok.tabMode = {};
 
 wok.main = function() {
@@ -86,25 +86,31 @@ wok.main = function() {
                 document.location.href = 'login.html';
             }
         });
-        var tabsDetails = JSON.parse(wok.cookie.get('tabs'));
+        if(tabs.length>0){
+            var tabsDetails = JSON.parse(wok.cookie.get('tabs'));
 
-        var isExisting = tabsDetails[functionality] && (tabsDetails[functionality].length)>0;
+            var isExisting = tabsDetails[functionality] && (tabsDetails[functionality].length)>0;
 
-        if(isExisting){
-           tabs.push.apply(tabs,tabsDetails[functionality]);
+            if(isExisting){
+               tabs.push.apply(tabs,tabsDetails[functionality]);
+            }
+            functionalTabs[functionality] = tabs;
         }
-        functionalTabs[functionality] = tabs;
-
         return functionalTabs;
     };
 
     var retrieveTabs = function(url) {
-        var tabs;
+        var tabs={};
         $.ajax({
             url : url,
             async : false,
             success : function(xmlData) {
                 tabs = parseTabs(xmlData);
+            },
+            statusCode : {
+             404:function(){
+              return tabs;
+             }
             }
         });
         return tabs;
@@ -391,7 +397,7 @@ wok.main = function() {
         wok.user.showUser(true);
         initListeners();
         updatePage();
-        
+
         // Overriding Bootstrap Modal windows to allow a stack of modal windows and backdrops
         $(document).on({
             'show.bs.modal': function () {
@@ -410,7 +416,7 @@ wok.main = function() {
                     }, 0);
                 }
             }
-        }, '.modal'); 
+        }, '.modal');
 
 
     };
